@@ -49,6 +49,22 @@ app.get('/auth/spotify/callback', function (req, res) {
         });
 });
 
+app.get('/refresh/:token', function (req, res) {
+    axios.post('https://accounts.spotify.com/api/token', querystring.encode({
+        grant_type: 'refresh_token',
+        refresh_token: req.params.token,
+        client_id: process.env.CLIENT_ID,
+        client_secret: process.env.CLIENT_SECRET
+    }))
+        .then(function (response) {
+            console.log(response.data)
+            res.send(response.data.access_token)
+        })
+        .catch(function (error) {
+            console.log(error);
+            res.end()
+        });
+});
 
 
 app.listen(process.env.PORT || port, () => {
