@@ -16,7 +16,7 @@ app.get('/auth', function (req, res) {
         querystring.encode({
             client_id: process.env.CLIENT_ID,
             response_type: 'code',
-            redirect_uri: process.env.redirect_uri,
+            redirect_uri: process.env.REDIRECT_URI,
             scope: scopes,
             show_dialog: true
         }))
@@ -35,7 +35,7 @@ app.get('/auth/spotify/callback', function (req, res) {
     axios.post('https://accounts.spotify.com/api/token', querystring.encode({
         grant_type: 'authorization_code',
         code: req.query.code,
-        redirect_uri: process.env.redirect_uri,
+        redirect_uri: process.env.REDIRECT_URI,
         client_id: process.env.CLIENT_ID,
         client_secret: process.env.CLIENT_SECRET
     }))
