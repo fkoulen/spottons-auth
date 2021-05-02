@@ -2,9 +2,11 @@ require('dotenv').config()
 const express = require('express')
 const querystring = require('querystring')
 const axios = require('axios')
+const path = require('path');
 const app = express()
 const port = 3000
 
+app.set('view engine', 'pug')
 /**
  * Redirect to authorization.
  */
@@ -48,7 +50,11 @@ app.get('/auth/spotify/callback', function (req, res) {
     }))
         .then(function (response) {
             console.log(response.data)
-            res.send(response.data.access_token)
+            res.render("tokens", {
+                copy_js: path.join(__dirname, '/javascript/copy.js'),
+                access_token: response.data.access_token,
+                refresh_token: response.data.refresh_token
+            })
         })
         .catch(function (error) {
             console.log(error);
@@ -56,6 +62,9 @@ app.get('/auth/spotify/callback', function (req, res) {
         });
 });
 
+/**
+ * Get access token through refresh.
+ */
 app.get('/refresh/:token', function (req, res) {
     axios.post('https://accounts.spotify.com/api/token', querystring.encode({
         grant_type: 'refresh_token',
@@ -73,7 +82,18 @@ app.get('/refresh/:token', function (req, res) {
         });
 });
 
+/**
+ * Get JS file (for copy button).
+ */
+app.get('/javascript/copy.js', function (req, res) {
+    res.sendFile(path.join(__dirname, '/javascript/copy.js'))
+});
 
 app.listen(process.env.PORT || port, () => {
-    console.log(`You can now access http://localhost:${port}`)
+    const env = process.env.ENVIRONMENT
+    if (env === "LOCAL") {
+        console.log(`You can now access http://localhost:${port}`)
+    } else {
+        console.log(`Hosted on port ${port}`)
+    }
 })

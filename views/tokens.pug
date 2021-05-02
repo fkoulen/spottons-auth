@@ -1,0 +1,65 @@
+doctype html
+// Credit copy button: https://codepen.io/nathanlong/pen/ZpAmjv
+head
+    meta(charset='UTF-8')
+    title Spottons
+    link(rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T' crossorigin='anonymous')
+    script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js' integrity='sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q' crossorigin='anonymous')
+    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js' integrity='sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl' crossorigin='anonymous')
+    style.
+        body {
+            padding-top: 50px;
+        }
+
+        .icon {
+            width: 16px;
+            height: 16px;
+            padding: 0;
+            margin: 0;
+            vertical-align: middle;
+        }
+
+        .btn-group {
+            border: 1px solid gray;
+            border-radius: .25rem;
+        }
+
+        code {
+            color: #1DB954;
+        }
+body
+    .container
+        .content
+            h1 Successfully authenticated!
+            p
+                | The next step is pasting the following information into your&nbsp;
+                code Variables.inc
+                |  &nbsp;file that just opened up!
+            h3 Access token:
+            .btn-group
+                .btn.btn-secondary(style='max-width:55rem;word-break:break-all')=access_token
+                button.btn.btn-default.btn-copy.js-tooltip.js-copy(type='button' data-toggle='tooltip' data-placement='bottom' data-copy=access_token title='Copy to clipboard')
+                    // icon from google's material design library
+                    svg.icon(xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' width='24' height='24' viewbox='0 0 24 24')
+                        path(d='M17,9H7V7H17M17,13H7V11H17M14,17H7V15H14M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z')
+            p.mt-1
+                | Paste the access token behind&nbsp;
+                code ACCESS_TOKEN=
+                | &nbsp; in&nbsp;
+                code Variables.inc
+                | .
+            h3 Refresh token:
+            .btn-group
+                .btn.btn-secondary(style='max-width:55rem;word-break:break-all')=refresh_token
+                button.btn.btn-default.btn-copy.js-tooltip.js-copy(type='button' data-toggle='tooltip' data-placement='bottom' data-copy=refresh_token title='Copy to clipboard')
+                    // icon from google's material design library
+                    svg.icon(xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' width='24' height='24' viewbox='0 0 24 24')
+                        path(d='M17,9H7V7H17M17,13H7V11H17M14,17H7V15H14M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z')
+            p.mt-1
+                | Paste the refresh token behind&nbsp;
+                code REFRESH_TOKEN=
+                |  &nbsp;in&nbsp;
+                code Variables.inc
+                |  &nbsp;.
+            script(type='text/javascript' src='/javascript/copy.js')
