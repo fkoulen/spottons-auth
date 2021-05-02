@@ -6,6 +6,13 @@ const app = express()
 const port = 3000
 
 /**
+ * Redirect to authorization.
+ */
+app.get('/', function (req, res) {
+    res.redirect('/auth')
+})
+
+/**
  * Ask for authorization.
  */
 app.get('/auth', function (req, res) {
@@ -68,5 +75,5 @@ app.get('/refresh/:token', function (req, res) {
 
 
 app.listen(process.env.PORT || port, () => {
-    console.log(`You can now access http://localhost:${port}/auth`)
+    console.log(`You can now access http://localhost:${port}`)
 })
