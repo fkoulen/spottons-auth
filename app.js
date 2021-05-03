@@ -1,99 +1,49 @@
 require('dotenv').config()
 const express = require('express')
-const querystring = require('querystring')
-const axios = require('axios')
 const path = require('path');
+const logger = require('morgan');
+const sassMiddleware = require('node-sass-middleware');
+const createError = require('http-errors');
+
+const indexRouter = require('./routes/index');
+const spotifyRouter = require('./routes/spotify');
+
 const app = express()
-const port = 3000
 
-app.set('view engine', 'pug')
-/**
- * Redirect to authorization.
- */
-app.get('/', function (req, res) {
-    res.redirect('/auth')
-})
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
 
-/**
- * Ask for authorization.
- */
-app.get('/auth', function (req, res) {
-    // Scopes must be separated by spaces
-    const scopes = 'user-modify-playback-state'
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(sassMiddleware({
+    src: path.join(__dirname, 'public'),
+    dest: path.join(__dirname, 'public'),
+    indentedSyntax: true, // true = .sass and false = .scss
+    sourceMap: true
+}));
+app.use(express.static(path.join(__dirname, 'public')));
 
-    res.redirect(`https://accounts.spotify.com/authorize?` +
-        querystring.encode({
-            client_id: process.env.CLIENT_ID,
-            response_type: 'code',
-            redirect_uri: process.env.REDIRECT_URI,
-            scope: scopes,
-            show_dialog: true
-        }))
+app.use('/', indexRouter);
+app.use('/spotify', spotifyRouter);
 
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+    next(createError(404));
 });
 
-/**
- * Get access token if request is accepted. Show information if not.
- */
-app.get('/auth/spotify/callback', function (req, res) {
-    if (req.query.error) {
-        // TODO - Show info about why permission necessary
-        return res.send("You need to accept if you want to use Spottons.")
-    }
+// error handler
+app.use(function(err, req, res, next) {
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-    axios.post('https://accounts.spotify.com/api/token', querystring.encode({
-        grant_type: 'authorization_code',
-        code: req.query.code,
-        redirect_uri: process.env.REDIRECT_URI,
-        client_id: process.env.CLIENT_ID,
-        client_secret: process.env.CLIENT_SECRET
-    }))
-        .then(function (response) {
-            console.log(response.data)
-            res.render("tokens", {
-                copy_js: path.join(__dirname, '/javascript/copy.js'),
-                access_token: response.data.access_token,
-                refresh_token: response.data.refresh_token
-            })
-        })
-        .catch(function (error) {
-            console.log(error);
-            res.end()
-        });
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
 });
 
-/**
- * Get access token through refresh.
- */
-app.get('/refresh/:token', function (req, res) {
-    axios.post('https://accounts.spotify.com/api/token', querystring.encode({
-        grant_type: 'refresh_token',
-        refresh_token: req.params.token,
-        client_id: process.env.CLIENT_ID,
-        client_secret: process.env.CLIENT_SECRET
-    }))
-        .then(function (response) {
-            console.log(response.data)
-            res.send(response.data.access_token)
-        })
-        .catch(function (error) {
-            console.log(error);
-            res.end()
-        });
-});
 
-/**
- * Get JS file (for copy button).
- */
-app.get('/javascript/copy.js', function (req, res) {
-    res.sendFile(path.join(__dirname, '/javascript/copy.js'))
-});
-
-app.listen(process.env.PORT || port, () => {
-    const env = process.env.ENVIRONMENT
-    if (env === "LOCAL") {
-        console.log(`You can now access http://localhost:${port}`)
-    } else {
-        console.log(`Hosted on port ${port}`)
-    }
-})
+module.exports = app
